@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 )
 
 func main() {
@@ -15,8 +13,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("total (no goroutines): %v\n", noGoroutines(inputs))
-	fmt.Printf("total (with goroutines): %v\n", withGoroutines(inputs))
+	s1 := noGoroutines(inputs)
+	s2 := withGoroutines(inputs)
+
+	fmt.Printf("total (no goroutines): %v\n", s1)
+	fmt.Printf("total (with goroutines): %v\n", s2)
+	fmt.Printf("results match? %v\n", s1 == s2)
 }
 
 func surfaceArea(nums []int) int {
@@ -88,17 +90,13 @@ func getInputs() ([][]int, error) {
 	var inputs [][]int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		line := scanner.Text()
-		numsStr := strings.Split(line, "x")
-
-		// convert to slice of ints
-		var nums []int
-		for _, v := range numsStr {
-			n, _ := strconv.Atoi(v)
-			nums = append(nums, n)
+		var a, b, c int
+		_, err := fmt.Sscanf(scanner.Text(), "%dx%dx%d", &a, &b, &c)
+		if err != nil {
+			return nil, err
 		}
 
-		inputs = append(inputs, nums)
+		inputs = append(inputs, []int{a, b, c})
 	}
 
 	if err := scanner.Err(); err != nil {
